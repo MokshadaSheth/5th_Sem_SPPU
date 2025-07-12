@@ -1,0 +1,274 @@
+Consider the following relational Schema.
+Student( s_id,Drive_id,T_id,s_name,CGPA,s_branch,S_dob)
+PlacementDrive( Drive_id,Pcompany_name,package,location)
+Training ( T_id,Tcompany_name,T_Fee,T_year)
+
+Note: Use referential integrity constraints while creating tables with on delete cascade
+options.
+Create view(simple), index, sequence and synonym based on above tables.
+
+PLacement:
+
+CREATE TABLE PlacementDrive(Drive_id int NOT NULL, Pcompany_name varchar(20), package int, location varchar(30), 
+PRIMARY KEY (Drive_id) );
+
+CREATE TABLE Student(s_id int NOT NULL,Drive_id int, T_id int,s_name varchar(20), CGPA float, s_branch varchar(10), S_dob varchar(20),PRIMARY KEY (s_id),FOREIGN KEY (Drive_id) REFERENCES PlacementDrive(Drive_id),FOREIGN KEY (T_id) REFERENCES Training(T_id));
+
+
+CREATE TABLE Training(T_id int, T_company varchar(20), T_Fee int, T_yeat int, PRIMARY KEY (T_id));
+ALTER TABLE PlacementDrive RENAME COLUMN loacation TO location;
+
+1. Insert at least 10 records in the Student table and insert other tables accordingly.
+
+INSERT INTO PlacementDrive(Drive_id, Pcompany_name, package, location) VALUES (10,'Amazon', 30000, 'Pune');
+INSERT INTO PlacementDrive(Drive_id, Pcompany_name, package, location) VALUES (20,'Google', 50000, 'Mumbai');
+INSERT INTO PlacementDrive(Drive_id, Pcompany_name, package, location) VALUES (30,'PhonePe', 40000, 'Delhi');
+
+mysql> SELECT * FROM PlacementDrive;
++----------+---------------+---------+----------+
+| Drive_id | Pcompany_name | package | location |
++----------+---------------+---------+----------+
+|       10 | Amazon        |   30000 | Pune     |
+|       20 | Google        |   50000 | Mumbai   |
+|       30 | PhonePe       |   40000 | Delhi    |
++----------+---------------+---------+----------+
+3 rows in set (0.00 sec)
+
+
+INSERT INTO Training(T_id, T_company, T_Fee, T_year) VALUES(50,'Wipro',2000,2025);
+INSERT INTO Training(T_id, T_company, T_Fee, T_year) VALUES(51,'TCS',4000,2019);
+INSERT INTO Training(T_id, T_company, T_Fee, T_year) VALUES(53,'Tata',3000,2021);
+
+mysql> SELECT * FROM Training;
++------+-----------+-------+--------+
+| T_id | T_company | T_Fee | T_year |
++------+-----------+-------+--------+
+|   50 | Wipro     |  2000 |   2025 |
+|   51 | TCS       |  4000 |   2019 |
+|   52 | Tata      |  3000 |   2021 |
++------+-----------+-------+--------+
+3 rows in set (0.00 sec)
+
+
+INSERT INTO Student (s_id, Drive_id, T_id, s_name, CGPA, s_branch, s_dob) VALUES
+(1, 10, 50, 'Ananya', 9.0, 'Computer', '2006-02-25'),
+(2, 20, 51, 'David', 8.5, 'IT', '2005-03-15'),
+(3, 30, 52, 'Alice', 7.8, 'Computer', '2006-07-20'),
+(4, 40, 50, 'Deepak', 6.9, 'IT', '2004-10-12'),
+(5, 50, 51, 'Diana', 7.2, 'Computer', '2005-11-22'),
+(6, 10, 52, 'Arjun', 8.0, 'IT', '2006-01-30'),
+(7, 20, 50, 'Amrita', 6.5, 'Computer', '2007-05-18'),
+(8, 30, 51, 'Dev', 7.5, 'IT', '2004-09-10'),
+(9, 40, 52, 'Aditya', 8.2, 'Computer', '2006-08-05'),
+(10, 50, 50, 'Anil', 9.1, 'IT', '2005-04-25');
+
+mysql> SELECT * FROM Student;
++------+----------+------+--------+------+----------+------------+
+| s_id | Drive_id | T_id | s_name | CGPA | s_branch | S_dob      |
++------+----------+------+--------+------+----------+------------+
+|    1 |       10 |   50 | Ananya |    9 | Comp     | 2006-02-25 |
+|    2 |       20 |   51 | David  |  8.5 | IT       | 2005-03-15 |
+|    3 |       30 |   52 | Alice  |  7.8 | Computer | 2006-07-20 |
+|    4 |       40 |   50 | Deepak |  6.9 | IT       | 2004-10-12 |
+|    5 |       50 |   51 | Diana  |  7.2 | Computer | 2005-11-22 |
+|    6 |       10 |   52 | Arjun  |    8 | IT       | 2006-01-30 |
+|    7 |       20 |   50 | Amrita |  6.5 | Computer | 2007-05-18 |
+|    8 |       30 |   51 | Dev    |  7.5 | IT       | 2004-09-10 |
+|    9 |       40 |   52 | Aditya |  8.2 | Computer | 2006-08-05 |
+|   10 |       50 |   50 | Anil   |  9.1 | IT       | 2005-04-25 |
++------+----------+------+--------+------+----------+------------+
+10 rows in set (0.00 sec)
+
+
+2. Display all students details with branch ‘Computer ‘and ‘It’ and student name
+starting with 'a' or 'd'.
+
+mysql> SELECT * FROM Student WHERE s_branch IN ('Computer','IT') AND (s_name LIKE 'a%' OR s_name LIKE 'd%');
+
++------+----------+------+--------+------+----------+------------+
+| s_id | Drive_id | T_id | s_name | CGPA | s_branch | S_dob      |
++------+----------+------+--------+------+----------+------------+
+|    1 |       10 |   50 | Ananya |    9 | Computer | 2006-02-25 |
+|    2 |       20 |   51 | David  |  8.5 | IT       | 2005-03-15 |
+|    4 |       40 |   50 | Deepak |  6.9 | IT       | 2004-10-12 |
+|    5 |       50 |   51 | Diana  |  7.2 | Computer | 2005-11-22 |
+|    6 |       10 |   52 | Arjun  |    8 | IT       | 2006-01-30 |
+|    7 |       20 |   50 | Amrita |  6.5 | Computer | 2007-05-18 |
+|    8 |       30 |   51 | Dev    |  7.5 | IT       | 2004-09-10 |
+|    9 |       40 |   52 | Aditya |  8.2 | Computer | 2006-08-05 |
+|   10 |       50 |   50 | Anil   |  9.1 | IT       | 2005-04-25 |
++------+----------+------+--------+------+----------+------------+
+9 rows in set (0.00 sec)
+
+
+
+3. list the number of different companies.(use of distinct)
+
+mysql> SELECT COUNT(DISTINCT Pcompany_name) AS Total_Company FROM PlacementDrive;
++---------------+
+| Total_Company |
++---------------+
+|             5 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> 
+
+
+4. Give 15% increase in fee of the Training whose joining year is 2019.
+
+mysql> UPDATE Training SET T_Fee = T_Fee * 1.15 WHERE T_year=2019;
+Query OK, 1 row affected (0.02 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM Training;
++------+-----------+-------+--------+
+| T_id | T_company | T_Fee | T_year |
++------+-----------+-------+--------+
+|   50 | Wipro     |  2000 |   2025 |
+|   51 | TCS       |  4600 |   2019 |
+|   52 | Tata      |  3000 |   2021 |
++------+-----------+-------+--------+
+3 rows in set (0.00 sec)
+
+mysql> 
+
+5. Delete Student details having CGPA score less than 7.
+mysql> DELETE FROM Student
+    -> WHERE CGPA < 7;
+Query OK, 2 rows affected (0.02 sec)
+
+mysql> SELECT * FROM Student;
++------+----------+------+--------+------+----------+------------+
+| s_id | Drive_id | T_id | s_name | CGPA | s_branch | S_dob      |
++------+----------+------+--------+------+----------+------------+
+|    1 |       10 |   50 | Ananya |    9 | Computer | 2006-02-25 |
+|    2 |       20 |   51 | David  |  8.5 | IT       | 2005-03-15 |
+|    3 |       30 |   52 | Alice  |  7.8 | Mech     | 2006-07-20 |
+|    5 |       50 |   51 | Diana  |  7.2 | Computer | 2005-11-22 |
+|    6 |       10 |   52 | Arjun  |    8 | IT       | 2006-01-30 |
+|    8 |       30 |   51 | Dev    |  7.5 | IT       | 2004-09-10 |
+|    9 |       40 |   52 | Aditya |  8.2 | Computer | 2006-08-05 |
+|   10 |       50 |   50 | Anil   |  9.1 | IT       | 2005-04-25 |
++------+----------+------+--------+------+----------+------------+
+8 rows in set (0.00 sec)
+
+mysql> 
+
+6. Find the names of companies belonging to pune or Mumbai
+mysql> SELECT DISTINCT Pcompany_name
+    -> FROM PlacementDrive
+    -> WHERE location IN ('Pune', 'Mumbai');
++---------------+
+| Pcompany_name |
++---------------+
+| Amazon        |
+| Google        |
+| Netflix       |
+| Apple         |
++---------------+
+4 rows in set (0.00 sec)
+
+mysql> 
+
+
+7. Find the student name who joined training in 1-1-2019 as well as in 1-1-2021
+8. Find the student name having maximum CGPA score and names of students
+having CGPA score between 7 to 9 .
+mysql> SELECT s_name, CGPA
+    -> FROM Student
+    -> WHERE CGPA = (SELECT MAX(CGPA) FROM Student);
++--------+------+
+| s_name | CGPA |
++--------+------+
+| Anil   |  9.1 |
++--------+------+
+1 row in set (0.00 sec)
+
+mysql> SELECT s_name, CGPA
+    -> FROM Student
+    -> WHERE CGPA BETWEEN 7 AND 9;
++--------+------+
+| s_name | CGPA |
++--------+------+
+| Ananya |    9 |
+| David  |  8.5 |
+| Alice  |  7.8 |
+| Diana  |  7.2 |
+| Arjun  |    8 |
+| Dev    |  7.5 |
+| Aditya |  8.2 |
++--------+------+
+7 rows in set (0.00 sec)
+
+
+9. Display all Student name with T_id with decreasing order of Fees
+mysql> SELECT s.s_name, s.T_id, t.T_Fee
+    -> FROM Student s
+    -> JOIN Training t ON s.T_id = t.T_id
+    -> ORDER BY t.T_Fee DESC;
++--------+------+-------+
+| s_name | T_id | T_Fee |
++--------+------+-------+
+| Dev    |   51 |  4600 |
+| David  |   51 |  4600 |
+| Diana  |   51 |  4600 |
+| Aditya |   52 |  3000 |
+| Alice  |   52 |  3000 |
+| Arjun  |   52 |  3000 |
+| Anil   |   50 |  2000 |
+| Ananya |   50 |  2000 |
++--------+------+-------+
+8 rows in set (0.00 sec)
+
+
+10. Display PCompany name, S_name ,location and Package with Package 30K,
+40K and 50k
+
+ysql> SELECT p.Pcompany_name, s.s_name, p.location, p.package
+    -> FROM PlacementDrive p
+    -> JOIN Student s ON p.Drive_id = s.Drive_id
+    -> WHERE p.package IN (30000, 40000, 50000);
++---------------+--------+----------+---------+
+| Pcompany_name | s_name | location | package |
++---------------+--------+----------+---------+
+| Amazon        | Ananya | Pune     |   30000 |
+| Google        | David  | Mumbai   |   50000 |
+| PhonePe       | Alice  | Delhi    |   40000 |
+| Apple         | Diana  | Pune     |   50000 |
+| Amazon        | Arjun  | Pune     |   30000 |
+| PhonePe       | Dev    | Delhi    |   40000 |
+| Apple         | Anil   | Pune     |   50000 |
++---------------+--------+----------+---------+
+7 rows in set (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mysql> SELECT * FROM Student;
++------+----------+------+--------+------+----------+------------+
+| s_id | Drive_id | T_id | s_name | CGPA | s_branch | S_dob      |
++------+----------+------+--------+------+----------+------------+
+|    1 |       10 |   50 | Ananya |    9 | Computer | 2006-02-25 |
+|    2 |       20 |   51 | David  |  8.5 | IT       | 2005-03-15 |
+|    3 |       30 |   52 | Alice  |  7.8 | Computer | 2006-07-20 |
+|    4 |       40 |   50 | Deepak |  6.9 | IT       | 2004-10-12 |
+|    5 |       50 |   51 | Diana  |  7.2 | Computer | 2005-11-22 |
+|    6 |       10 |   52 | Arjun  |    8 | IT       | 2006-01-30 |
+|    7 |       20 |   50 | Amrita |  6.5 | Computer | 2007-05-18 |
+|    8 |       30 |   51 | Dev    |  7.5 | IT       | 2004-09-10 |
+|    9 |       40 |   52 | Aditya |  8.2 | Computer | 2006-08-05 |
+|   10 |       50 |   50 | Anil   |  9.1 | IT       | 2005-04-25 |
++------+----------+------+--------+------+----------+------------+
+10 rows in set (0.00 sec)
+
