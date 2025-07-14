@@ -232,6 +232,10 @@ public:
             if (remaining_time[shortest] == 0)
             {
                 completed++;
+                cout << "\nCompleted Process:\n";
+                cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+                cout << "|" << setw(3) << allProcess[shortest].id;
+                cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
                 allProcess[shortest].CT = time;
                 allProcess[shortest].calTAT();
                 allProcess[shortest].calWT();
@@ -241,56 +245,73 @@ public:
         // Display final process table
         finalProcessTable();
     }
+
+    void roundRobin()
+    {
+        vector<int> remaining_time(totalP);
+        int time = 0;
+        int completed = 0;
+        int index = 0;
+
+        for (int i = 0; i < totalP; i++)
+        {
+            remaining_time[i] = allProcess[i].BT;
+        }
+
+        // Till all process are completed we will continue round robin
+        while (completed != totalP)
+        {
+            index = index % (totalP);
+            if (allProcess[index].AT > time) // No process arrived
+            {
+                time++;
+                continue;
+            }
+            if (remaining_time[index] == 0)
+            {
+                index++;
+                continue;
+            }
+            if (remaining_time[index] > 0)
+            {
+                int slot = 2;
+                cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+                cout << "Executing Process: " << allProcess[index].id << endl;
+                while (slot != 0 && remaining_time[index] != 0)
+                {
+
+                    slot--;
+                    remaining_time[index]--;
+                    time++;
+
+                    cout << "\nindex: " << index << "\nslot:" << slot << "  remaintime: " << remaining_time[index] << "  time:" << time << endl;
+                }
+                cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+            }
+
+            if (remaining_time[index] == 0)
+            {
+                completed++;
+                allProcess[index].CT = time;
+                allProcess[index].calTAT();
+                allProcess[index].calWT();
+                cout << "\nInside Completed\n";
+            }
+
+            index++;
+        }
+        finalProcessTable();
+    }
 };
 int main()
 {
-    int choice;
     Scheduling obj;
-
-    do
-    {
-        cout << "\n################################################################\n";
-        cout << setw(10) << right << "Menu:\n\n";
-        cout << setw(5) << right << "1. FCFS" << endl;
-        cout << setw(5) << right << "2. SJF" << endl;
-        cout << setw(5) << right << "3. Round Robin" << endl;
-        cout << setw(5) << right << "4. Priority" << endl;
-        cout << setw(5) << right << "5. Exit Program" << endl;
-        cout << setw(3) << right << "\nEnter choice code: ";
-        cin >> choice;
-
-        switch (choice)
-        {
-        case 1:
-            obj.takeIp("process.txt");
-            obj.FCFS();
-            break;
-        case 2:
-            obj.takeIp("process.txt");
-            obj.SJF_Preemptive();
-            break;
-        case 3: 
-        obj.takeIp("process.txt");
-        // obj.roundRobin();
-        break;
-        case 4:
-        cout<<"\nIN process\n";
-        break;
-        case 5:
-        cout<<"\nByee\n";
-        break;
-        
-        default:
-        cout<<"\nInvalid choice\n";
-            break;
-        }
-    } while (choice !=5);
-
     obj.takeIp("process.txt");
     obj.displayProcess();
-    obj.FCFS();
-    obj.takeIp("process.txt");
-    obj.SJF_Preemptive();
+    // obj.FCFS();
+    // obj.takeIp("process.txt");
+    // obj.SJF_Preemptive();
+    obj.roundRobin();
 
     return 0;
 }
