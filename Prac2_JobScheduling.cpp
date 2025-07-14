@@ -126,7 +126,7 @@ public:
     }
     void finalProcessTable()
     {
-        cout<<"\n\nFinal Process Table:\n";
+        cout << "\n\nFinal Process Table:\n";
         cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
         cout << "|" << left << setw(10) << "ProcessId";
         cout << "|" << left << setw(10) << "AT";
@@ -165,13 +165,13 @@ public:
             displayQueue(fcfsq);
             Process p = fcfsq.front();
 
-            cout<<"\nExecuting Process: "<<p.id<<endl;
-            //Can add processing for actual process
-            cout<<"\nProcess Executed";
+            cout << "\nExecuting Process: " << p.id << endl;
+            // Can add processing for actual process
+            cout << "\nProcess Executed";
 
             currTime += p.BT;
             int index = 0;
-            while(allProcess[index].id != p.id)
+            while (allProcess[index].id != p.id)
             {
                 index++;
             }
@@ -184,72 +184,113 @@ public:
         finalProcessTable();
     }
 
- void SJF_Preemptive()
-{
-    cout << "\n\n----- SJF Preemptive (Shortest Remaining Time First) Scheduling -----\n";
-
-    int completed = 0, time = 0, min_remain_time;
-    int shortest = -1;
-    bool found = false;
-
-    // Make a copy of allProcess burst times (remaining times)
-    vector<int> remaining_time(totalP);
-    for (int i = 0; i < totalP; i++)
+    void SJF_Preemptive()
     {
-        remaining_time[i] = allProcess[i].BT;
-    }
+        cout << "\n\n----- SJF Preemptive (Shortest Remaining Time First) Scheduling -----\n";
 
-    while (completed != totalP)
-    {
-        // Find process with minimum remaining time at current time
-        min_remain_time = INT_MAX;
-        found = false;
+        int completed = 0, time = 0, min_remain_time;
+        int shortest = -1;
+        bool found = false;
 
+        // Make a copy of allProcess burst times (remaining times)
+        vector<int> remaining_time(totalP);
         for (int i = 0; i < totalP; i++)
         {
-            if (allProcess[i].AT <= time && remaining_time[i] > 0)
+            remaining_time[i] = allProcess[i].BT;
+        }
+
+        while (completed != totalP)
+        {
+            // Find process with minimum remaining time at current time
+            min_remain_time = INT_MAX;
+            found = false;
+
+            for (int i = 0; i < totalP; i++)
             {
-                if (remaining_time[i] < min_remain_time)
+                if (allProcess[i].AT <= time && remaining_time[i] > 0)
                 {
-                    min_remain_time = remaining_time[i];
-                    shortest = i;
-                    found = true;
+                    if (remaining_time[i] < min_remain_time)
+                    {
+                        min_remain_time = remaining_time[i];
+                        shortest = i;
+                        found = true;
+                    }
                 }
+            }
+
+            if (!found)
+            {
+                time++; // No process available at this time, so idle
+                continue;
+            }
+
+            // Execute process for 1 unit
+            remaining_time[shortest]--;
+            time++;
+
+            // If process finished
+            if (remaining_time[shortest] == 0)
+            {
+                completed++;
+                allProcess[shortest].CT = time;
+                allProcess[shortest].calTAT();
+                allProcess[shortest].calWT();
             }
         }
 
-        if (!found)
-        {
-            time++; // No process available at this time, so idle
-            continue;
-        }
-
-        // Execute process for 1 unit
-        remaining_time[shortest]--;
-        time++;
-
-        // If process finished
-        if (remaining_time[shortest] == 0)
-        {
-            completed++;
-            allProcess[shortest].CT = time;
-            allProcess[shortest].calTAT();
-            allProcess[shortest].calWT();
-        }
+        // Display final process table
+        finalProcessTable();
     }
-
-    // Display final process table
-    finalProcessTable();
-}
 };
 int main()
 {
+    int choice;
     Scheduling obj;
+
+    do
+    {
+        cout << "\n################################################################\n";
+        cout << setw(10) << right << "Menu:\n\n";
+        cout << setw(5) << right << "1. FCFS" << endl;
+        cout << setw(5) << right << "2. SJF" << endl;
+        cout << setw(5) << right << "3. Round Robin" << endl;
+        cout << setw(5) << right << "4. Priority" << endl;
+        cout << setw(5) << right << "5. Exit Program" << endl;
+        cout << setw(3) << right << "\nEnter choice code: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            obj.takeIp("process.txt");
+            obj.FCFS();
+            break;
+        case 2:
+            obj.takeIp("process.txt");
+            obj.SJF_Preemptive();
+            break;
+        case 3: 
+        obj.takeIp("process.txt");
+        // obj.roundRobin();
+        break;
+        case 4:
+        cout<<"\nIN process\n";
+        break;
+        case 5:
+        cout<<"\nByee\n";
+        break;
+        
+        default:
+        cout<<"\nInvalid choice\n";
+            break;
+        }
+    } while (choice !=5);
+
     obj.takeIp("process.txt");
     obj.displayProcess();
     obj.FCFS();
     obj.takeIp("process.txt");
     obj.SJF_Preemptive();
-    
+
     return 0;
 }
