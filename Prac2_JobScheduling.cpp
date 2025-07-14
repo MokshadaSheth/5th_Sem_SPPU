@@ -305,13 +305,48 @@ public:
 };
 int main()
 {
+    int choice;
     Scheduling obj;
-    obj.takeIp("process.txt");
-    obj.displayProcess();
-    // obj.FCFS();
-    // obj.takeIp("process.txt");
-    // obj.SJF_Preemptive();
-    obj.roundRobin();
+    do
+    {
+        cout << "\n################################################################\n";
+        cout << setw(10) << right << "Menu:\n\n";
+        cout << setw(5) << right << "1. FCFS" << endl;
+        cout << setw(5) << right << "2. SJF" << endl;
+        cout << setw(5) << right << "3. Round Robin" << endl;
+        cout << setw(5) << right << "4. Priority" << endl;
+
+        cout << setw(5) << right << "5. Exit Program" << endl;
+        cout << "\n################################################################\n";
+
+        cout << setw(3) << right << "\nEnter choice code: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            obj.takeIp("process.txt");
+            obj.FCFS();
+            break;
+        case 2:
+            obj.takeIp("process.txt");
+            obj.SJF_Preemptive();
+            break;
+        case 3:
+            obj.takeIp("process.txt");
+            obj.roundRobin();
+            break;
+        case 4:
+            cout << "\nIN process\n";
+            break;
+        case 5:
+            cout << "\nByee\n";
+            break;
+        default:
+            cout << "\nInvalid choice\n";
+            break;
+        }
+    } while (choice != 5);
 
     return 0;
 }
