@@ -112,7 +112,24 @@ mysql> SELECT COUNT(DISTINCT Pcompany_name) AS Total_Company FROM PlacementDrive
 +---------------+
 1 row in set (0.00 sec)
 
+mysql> SELECT Pcompany_name, COUNT(*) AS Total_Company 
+    -> FROM PlacementDrive 
+    -> GROUP BY Pcompany_name;
++---------------+---------------+
+| Pcompany_name | Total_Company |
++---------------+---------------+
+| Amazon        |             2 |
+| Apple         |             1 |
+| Google        |             1 |
+| Netflix       |             1 |
+| PhonePe       |             1 |
++---------------+---------------+
+5 rows in set (0.00 sec)
+
 mysql> 
+
+
+mysql> SELECT Pcompany_name, COUNT(DISTINCT Pcompany_name) AS Total_Company FROM GROUP BY (DISTINCT Pcompany_name);
 
 
 4. Give 15% increase in fee of the Training whose joining year is 2019.
