@@ -173,6 +173,24 @@ mysql>
 
 
 7. Find the student name who joined training in 1-1-2019 as well as in 1-1-2021
+
+mysql> SELECT s_name 
+    -> FROM Student s 
+    -> WHERE s.T_id IN (SELECT T_id FROM Training WHERE T_year = 2019 OR T_year = 2025);
++--------+
+| s_name |
++--------+
+| Ananya |
+| David  |
+| Diana  |
+| Dev    |
+| Anil   |
++--------+
+5 rows in set (0.21 sec)
+
+mysql> 
+
+
 8. Find the student name having maximum CGPA score and names of students
 having CGPA score between 7 to 9 .
 mysql> SELECT s_name, CGPA
@@ -203,32 +221,41 @@ mysql> SELECT s_name, CGPA
 
 
 9. Display all Student name with T_id with decreasing order of Fees
-mysql> SELECT s.s_name, s.T_id, t.T_Fee
+mysql> SELECT s.s_name, s.T_id, 
+    ->        (SELECT t.T_Fee FROM Training t WHERE t.T_id = s.T_id) AS T_Fee
     -> FROM Student s
-    -> JOIN Training t ON s.T_id = t.T_id
-    -> ORDER BY t.T_Fee DESC;
+    -> ORDER BY T_Fee DESC;
 +--------+------+-------+
 | s_name | T_id | T_Fee |
 +--------+------+-------+
-| Dev    |   51 |  4600 |
 | David  |   51 |  4600 |
 | Diana  |   51 |  4600 |
-| Aditya |   52 |  3000 |
+| Dev    |   51 |  4600 |
 | Alice  |   52 |  3000 |
 | Arjun  |   52 |  3000 |
-| Anil   |   50 |  2000 |
+| Aditya |   52 |  3000 |
 | Ananya |   50 |  2000 |
+| Anil   |   50 |  2000 |
 +--------+------+-------+
-8 rows in set (0.00 sec)
+8 rows in set (1.41 sec)
+
+mysql> 
+
+
 
 
 10. Display PCompany name, S_name ,location and Package with Package 30K,
 40K and 50k
 
-ysql> SELECT p.Pcompany_name, s.s_name, p.location, p.package
-    -> FROM PlacementDrive p
-    -> JOIN Student s ON p.Drive_id = s.Drive_id
-    -> WHERE p.package IN (30000, 40000, 50000);
+mysql> SELECT 
+    ->     p.Pcompany_name,
+    ->     (SELECT s_name FROM Student s WHERE s.Drive_id = p.Drive_id LIMIT 1) AS s_name,
+    ->     p.location,
+    ->     p.package
+    -> FROM 
+    ->     PlacementDrive p
+    -> WHERE 
+    ->     p.package IN (30000, 40000, 50000);
 +---------------+--------+----------+---------+
 | Pcompany_name | s_name | location | package |
 +---------------+--------+----------+---------+
@@ -236,11 +263,8 @@ ysql> SELECT p.Pcompany_name, s.s_name, p.location, p.package
 | Google        | David  | Mumbai   |   50000 |
 | PhonePe       | Alice  | Delhi    |   40000 |
 | Apple         | Diana  | Pune     |   50000 |
-| Amazon        | Arjun  | Pune     |   30000 |
-| PhonePe       | Dev    | Delhi    |   40000 |
-| Apple         | Anil   | Pune     |   50000 |
 +---------------+--------+----------+---------+
-7 rows in set (0.00 sec)
+4 rows in set (0.00 sec)
 
 
 
