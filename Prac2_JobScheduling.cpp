@@ -5,11 +5,12 @@ class Process
 {
 private:
     int id;
-    int AT;  // Arrival Time
-    int BT;  // Burst Time
-    int CT;  // Completion Time
-    int TAT; // Turn Around Time
-    int WT;  // Wait Time
+    int AT;       // Arrival Time
+    int BT;       // Burst Time
+    int CT;       // Completion Time
+    int TAT;      // Turn Around Time
+    int WT;       // Wait Time
+    int Priority; // Priority
 public:
     friend class Scheduling;
     Process()
@@ -20,8 +21,9 @@ public:
         CT = -1;
         TAT = -1;
         WT = -1;
+        Priority = -1;
     }
-    Process(int i, int A, int B)
+    Process(int i, int A, int B, int P)
     {
         id = i;
         AT = A;
@@ -29,6 +31,7 @@ public:
         CT = 0;
         TAT = 0;
         WT = 0;
+        Priority = P;
     }
 
     void calTAT() // Turn Around Time
@@ -38,6 +41,15 @@ public:
     void calWT()
     {
         WT = TAT - BT;
+    }
+
+    bool checkPriority(Process &a, Process &b)
+    {
+        if (a.Priority < b.Priority) // 0-Highest  1-Lowest
+        {
+            return true;
+        }
+        return false;
     }
 };
 
@@ -76,10 +88,10 @@ public:
         allProcess = new Process[totalP];
         for (int m = 0; m < totalP; m++)
         {
-            int id, AT, BT;
+            int id, AT, BT, P;
 
-            file >> id >> AT >> BT;
-            allProcess[m] = Process(id, AT, BT);
+            file >> id >> AT >> BT >> P;
+            allProcess[m] = Process(id, AT, BT, P);
         }
         // Sort allProcess
         for (int i = 0; i < totalP; i++)
@@ -97,20 +109,22 @@ public:
 
     void displayProcess()
     {
-        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
         cout << "|" << left << setw(10) << "ProcessId";
         cout << "|" << left << setw(10) << "AT";
         cout << "|" << left << setw(10) << "BT";
+        cout << "|" << left << setw(10) << "Priority";
         cout << "|" << endl;
         for (int i = 0; i < totalP; i++)
         {
-            cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+            cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
             cout << "|" << left << setw(10) << allProcess[i].id;
             cout << "|" << left << setw(10) << allProcess[i].AT;
             cout << "|" << left << setw(10) << allProcess[i].BT;
+            cout << "|" << left << setw(10) << allProcess[i].Priority;
             cout << "|" << endl;
         }
-        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
     }
 
     void displayQueue(queue<Process> currQueue)
@@ -127,26 +141,28 @@ public:
     void finalProcessTable()
     {
         cout << "\n\nFinal Process Table:\n";
-        cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
         cout << "|" << left << setw(10) << "ProcessId";
         cout << "|" << left << setw(10) << "AT";
         cout << "|" << left << setw(10) << "BT";
+        cout << "|" << left << setw(10) << "Priority";
         cout << "|" << left << setw(10) << "CT";
         cout << "|" << left << setw(10) << "TAT";
         cout << "|" << left << setw(10) << "WT";
         cout << "|" << endl;
         for (int i = 0; i < totalP; i++)
         {
-            cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+            cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
             cout << "|" << left << setw(10) << allProcess[i].id;
             cout << "|" << left << setw(10) << allProcess[i].AT;
             cout << "|" << left << setw(10) << allProcess[i].BT;
+            cout << "|" << left << setw(10) << allProcess[i].Priority;
             cout << "|" << left << setw(10) << allProcess[i].CT;
             cout << "|" << left << setw(10) << allProcess[i].TAT;
             cout << "|" << left << setw(10) << allProcess[i].WT;
             cout << "|" << endl;
         }
-        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
     }
 
     void FCFS()
@@ -227,6 +243,9 @@ public:
             // Execute process for 1 unit
             remaining_time[shortest]--;
             time++;
+            cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+            cout << "\nCurrent Shortest BT Process: " << allProcess[shortest].id << " ----> " << allProcess[shortest].BT << endl;
+            cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
 
             // If process finished
             if (remaining_time[shortest] == 0)
@@ -295,10 +314,66 @@ public:
                 allProcess[index].CT = time;
                 allProcess[index].calTAT();
                 allProcess[index].calWT();
-                cout << "\nInside Completed\n";
             }
 
             index++;
+        }
+        finalProcessTable();
+    }
+
+    void PriorityScheduling() // 0 - highest 3- Lowest
+    {
+        cout << "+++++++++++++++++++++++++++++++";
+        cout << "\n  Priority Setting: \n 0-Highest    1-Lowest\n";
+        cout << "+++++++++++++++++++++++++++++++";
+
+        vector<int> remainingTime(totalP);
+        int time = 0;
+        int completed = 0;
+        int index = 0;
+        int highestPriority = 0;
+
+        for (int i = 0; i < totalP; i++)
+        {
+            remainingTime[i] = allProcess[i].BT;
+        }
+
+        while (completed != totalP)
+        {
+            bool found = false;
+
+            for (int i = 0; i < totalP; i++)
+            {
+                // cout<<"\nInside for "<<found<<endl;
+                if (allProcess[i].AT <= time && remainingTime[i] > 0)
+                {
+                    if (allProcess[highestPriority].Priority >= allProcess[i].Priority || remainingTime[highestPriority] == 0)
+                    {
+                        found = true;
+                        highestPriority = i; // More lower priority found
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                time++;
+                continue;
+            }
+            cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+            cout << "\nCurrent Highest Priority Process: " << allProcess[highestPriority].id << " ----> " << allProcess[highestPriority].Priority << endl;
+            cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+
+            remainingTime[highestPriority]--;
+            time++;
+            if (remainingTime[highestPriority] == 0)
+            {
+                completed++;
+                allProcess[highestPriority].CT = time;
+                allProcess[highestPriority].calTAT();
+                allProcess[highestPriority].calWT();
+                cout << "\n~~~~~~~~~~~~~~~~~~~~\nCompleted Process:   " << allProcess[highestPriority].id << "\n~~~~~~~~~~~~~~~~~~~~\n";
+            }
         }
         finalProcessTable();
     }
@@ -315,8 +390,9 @@ int main()
         cout << setw(5) << right << "2. SJF" << endl;
         cout << setw(5) << right << "3. Round Robin" << endl;
         cout << setw(5) << right << "4. Priority" << endl;
+        cout << setw(5) << right << "5. Display Process Table" << endl;
 
-        cout << setw(5) << right << "5. Exit Program" << endl;
+        cout << setw(5) << right << "6. Exit Program" << endl;
         cout << "\n################################################################\n";
 
         cout << setw(3) << right << "\nEnter choice code: ";
@@ -337,16 +413,21 @@ int main()
             obj.roundRobin();
             break;
         case 4:
-            cout << "\nIN process\n";
+            obj.takeIp("process.txt");
+            obj.PriorityScheduling();
             break;
         case 5:
+            obj.takeIp("process.txt");
+            cout << "\nProcess Table: \n\n";
+            obj.displayProcess();
+        case 6:
             cout << "\nByee\n";
             break;
         default:
             cout << "\nInvalid choice\n";
             break;
         }
-    } while (choice != 5);
+    } while (choice != 6);
 
     return 0;
 }
