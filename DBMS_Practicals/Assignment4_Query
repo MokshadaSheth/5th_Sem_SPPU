@@ -1,0 +1,56 @@
+Assignement 4:- 
+
+1. Borrower(Roll no, Name, Date of Issue, Name of Book, Status)
+2. Fine(Roll _no, Date, Amt)
+
+mysql> CREATE TABLE StudentNew (Roll_no INT PRIMARY KEY,Name VARCHAR(100) );
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> CREATE TABLE Borrower (     Roll_no INT,     Date_of_Issue DATE,     Name_of_Book VARCHAR(255),     Status CHAR(1),     PRIMARY KEY (Roll_no),     FOREIGN KEY (Roll_no) REFERENCES StudentNew(Roll_no) );
+Query OK, 0 rows affected (0.15 sec)
+
+mysql> CREATE TABLE Fine ( Roll_no INT, Date DATE, Amt INT, FOREIGN KEY (Roll_no) REFERENCES StudentNew(Roll_no) );
+Query OK, 0 rows affected (0.20 sec)
+
+mysql> SELECT * FROM StudentNew;
++---------+---------+
+| Roll_no | Name    |
++---------+---------+
+|     101 | Alice   |
+|     102 | Bob     |
+|     103 | Charlie |
++---------+---------+
+3 rows in set (0.01 sec)
+
+
+mysql> INSERT INTO Borrower (Roll_no, Date_of_Issue, Name_of_Book, Status) VALUES
+    -> (101, '2025-07-01', 'Database Systems', 'I'),
+    -> (102, '2025-06-15', 'Operating Systems', 'I'),
+    -> (103, '2025-07-10', 'Data Structures', 'I');
+Query OK, 3 rows affected (0.04 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM Borrower;
++---------+---------------+-------------------+--------+
+| Roll_no | Date_of_Issue | Name_of_Book      | Status |
++---------+---------------+-------------------+--------+
+|     101 | 2025-07-01    | Database Systems  | I      |
+|     102 | 2025-06-15    | Operating Systems | I      |
+|     103 | 2025-07-10    | Data Structures   | I      |
++---------+---------------+-------------------+--------+
+3 rows in set (0.00 sec)
+
+
+
+
+
+
+Accept Roll no and Name of Book from user. Check the
+number of days (from date of issue).
+If days are between 15 to 30 then fine amount will be Rs Sper day.
+If no. of days>30, per day fine will be Rs 50 per day and for days less
+than 30, Rs. 5 per day.
+After submitting the book, status will change from I to R.
+If condition offine is true, then details will be stored into fine table.
+Also handles the exception by named exception handler or user define
+exception handler.

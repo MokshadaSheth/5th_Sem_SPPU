@@ -1,0 +1,280 @@
+Assignment No 3 (based on Student schema)
+● Student (s_id, Drive_id,T_id,s_name,CGPA,s_branch,s_dob)
+● Placement Drive( Drive_id, Pcompany_name,package,location)
+● Training ( T_id,Tcompany_name,T_Fee,T_date)
+
+
+Use the tables created in assignment no 2 and execute the following
+queries:
+
+1. Find the Student details and Placement details using NATURAL JOIN.
+
+
+mysql> SELECT * FROM Student NATURAL JOIN PlacementDrive
+    -> ;
++----------+------+------+--------+------+----------+------------+---------------+---------+----------+
+| Drive_id | s_id | T_id | s_name | CGPA | s_branch | S_dob      | Pcompany_name | package | location |
++----------+------+------+--------+------+----------+------------+---------------+---------+----------+
+|       10 |    1 |   50 | Ananya |    9 | Computer | 2006-02-25 | Amazon        |   30000 | Pune     |
+|       20 |    2 |   51 | David  |  8.5 | IT       | 2005-03-15 | Google        |   50000 | Mumbai   |
+|       30 |    3 |   52 | Alice  |  7.8 | Mech     | 2006-07-20 | PhonePe       |   40000 | Delhi    |
+|       50 |    5 |   51 | Diana  |  7.2 | Computer | 2005-11-22 | Apple         |   50000 | Pune     |
+|       10 |    6 |   52 | Arjun  |    8 | IT       | 2006-01-30 | Amazon        |   30000 | Pune     |
+|       30 |    8 |   51 | Dev    |  7.5 | IT       | 2004-09-10 | PhonePe       |   40000 | Delhi    |
+|       40 |    9 |   52 | Aditya |  8.2 | Computer | 2006-08-05 | Netflix       |   60000 | Mumbai   |
+|       50 |   10 |   50 | Anil   |  9.1 | IT       | 2005-04-25 | Apple         |   50000 | Pune     |
+|       10 |   15 |   50 | anya   |    9 | Computer | 2006-02-25 | Amazon        |   30000 | Pune     |
++----------+------+------+--------+------+----------+------------+---------------+---------+----------+
+9 rows in set (0.45 sec)
+
+
+2. Find all the student details with company_name who have conducted in same drive
+
+mysql> SELECT * FROM PlacementDrive;
++----------+---------------+---------+------------+
+| Drive_id | Pcompany_name | package | location   |
++----------+---------------+---------+------------+
+|       10 | Amazon        |   30000 | Pune       |
+|       20 | Google        |   50000 | Mumbai     |
+|       30 | PhonePe       |   40000 | Delhi      |
+|       40 | Netflix       |   60000 | Mumbai     |
+|       50 | Apple         |   50000 | Pune       |
+|       60 | Barclys       |   30000 | Pandharpur |
++----------+---------------+---------+------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT Student.*, PlacementDrive.Pcompany_name FROM Student INNER JOIN PlacementDrive ON PlacementDrive.Drive_id = Student.Drive_id ORDER BY PlacementDrive.Drive_id;
++------+----------+------+--------+------+----------+------------+---------------+
+| s_id | Drive_id | T_id | s_name | CGPA | s_branch | S_dob      | Pcompany_name |
++------+----------+------+--------+------+----------+------------+---------------+
+|    1 |       10 |   50 | Ananya |    9 | Computer | 2006-02-25 | Amazon        |
+|    6 |       10 |   52 | Arjun  |    8 | IT       | 2006-01-30 | Amazon        |
+|   15 |       10 |   50 | anya   |    9 | Computer | 2006-02-25 | Amazon        |
+|    2 |       20 |   51 | David  |  8.5 | IT       | 2005-03-15 | Google        |
+|    8 |       30 |   51 | Dev    |  7.5 | IT       | 2004-09-10 | PhonePe       |
+|    3 |       30 |   52 | Alice  |  7.8 | Mech     | 2006-07-20 | PhonePe       |
+|    9 |       40 |   52 | Aditya |  8.2 | Computer | 2006-08-05 | Netflix       |
+|   10 |       50 |   50 | Anil   |  9.1 | IT       | 2005-04-25 | Apple         |
+|    5 |       50 |   51 | Diana  |  7.2 | Computer | 2005-11-22 | Apple         |
++------+----------+------+--------+------+----------+------------+---------------+
+9 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+3. List all the Student name and Student branch of Student having package 5 LPA
+
+mysql> SELECT s.s_name, s.s_branch FROM Student s JOIN PlacementDrive p ON s.Drive_id = p.Drive_id WHERE p.package = 500000;
++--------+----------+
+| s_name | s_branch |
++--------+----------+
+| Ananya | Computer |
+| Arjun  | IT       |
+| anya   | Computer |
++--------+----------+
+3 rows in set (0.00 sec)
+
+4.List all the student names ,company_name having T_fee more than 20000
+
+mysql> SELECT s.s_name,p.Pcompany_name FROM Student s JOIN PlacementDrive p ON s.Drive_id = p.Drive_id JOIN Training ON s.T_id = Training.T_id WHERE T_fee> 2000;
++--------+---------------+
+| s_name | Pcompany_name |
++--------+---------------+
+| David  | Google        |
+| Alice  | PhonePe       |
+| Diana  | Apple         |
+| Arjun  | Amazon        |
+| Dev    | PhonePe       |
+| Aditya | Netflix       |
++--------+---------------+
+6 rows in set (0.00 sec)
+
+mysql> 
+
+
+5. Display all training details attended by “shantanu” in year 2019
+
+mysql> SELECT t.* FROM Training t JOIN Student s ON s.T_id = t.T_id Where s.s_name = 'Shantanu' AND t.T_year = 2019;
++------+-----------+-------+--------+
+| T_id | T_company | T_Fee | T_year |
++------+-----------+-------+--------+
+|   51 | TCS       |  4600 |   2019 |
+|   51 | TCS       |  4600 |   2019 |
++------+-----------+-------+--------+
+2 rows in set (0.00 sec)
+
+6. list the total number of companies who conduct training before 2025
+
+mysql> Select COUNT(t.T_company) AS Companies FROM Training t WHERE t.T_year < 2025;
++-----------+
+| Companies |
++-----------+
+|         2 |
++-----------+
+1 row in set (0.01 sec)
+
+7. List the students name with company ‘Amazon’ and location ’Pune’
+mysql> SELECT * FROM Student Natural Join PlacementDrive;
++----------+------+------+----------+------+----------+------------+---------------+---------+----------+
+| Drive_id | s_id | T_id | s_name   | CGPA | s_branch | S_dob      | Pcompany_name | package | location |
++----------+------+------+----------+------+----------+------------+---------------+---------+----------+
+|       10 |    1 |   50 | Ananya   |    9 | Computer | 2006-02-25 | Amazon        |  500000 | Pune     |
+|       10 |    6 |   52 | Arjun    |    8 | IT       | 2006-01-30 | Amazon        |  500000 | Pune     |
+|       10 |   12 |   51 | Shantanu |    9 | Computer | 2006-02-25 | Amazon        |  500000 | Pune     |
+|       10 |   15 |   50 | anya     |    9 | Computer | 2006-02-25 | Amazon        |  500000 | Pune     |
+|       20 |    2 |   51 | David    |  8.5 | IT       | 2005-03-15 | Google        |   50000 | Mumbai   |
+|       20 |   13 |   51 | Shantanu |    9 | Computer | 2006-02-25 | Google        |   50000 | Mumbai   |
+|       30 |    3 |   52 | Alice    |  7.8 | Mech     | 2006-07-20 | PhonePe       |   40000 | Delhi    |
+|       30 |    8 |   51 | Dev      |  7.5 | IT       | 2004-09-10 | PhonePe       |   40000 | Delhi    |
+|       40 |    9 |   52 | Aditya   |  8.2 | Computer | 2006-08-05 | Netflix       |   60000 | Mumbai   |
+|       50 |    5 |   51 | Diana    |  7.2 | Computer | 2005-11-22 | Apple         |   50000 | Pune     |
+|       50 |   10 |   50 | Anil     |  9.1 | IT       | 2005-04-25 | Apple         |   50000 | Pune     |
++----------+------+------+----------+------+----------+------------+---------------+---------+----------+
+11 rows in set (0.00 sec)
+
+mysql> SELECT s.s_name FROM Student s JOIN PlacementDrive p ON s.Drive_id = p.Drive_id WHERE p.Pcompany_name = 'Amazon' AND p.location = 'Pune';
++----------+
+| s_name   |
++----------+
+| Ananya   |
+| Arjun    |
+| Shantanu |
+| anya     |
++----------+
+4 rows in set (0.00 sec)
+
+mysql> 
+
+8. Find the names of all Students who have joined ‘TCS ‘ training in 2019 .
+mysql> SELECT * FROM Student Natural Join Training;
++------+------+----------+----------+------+----------+------------+-----------+-------+--------+
+| T_id | s_id | Drive_id | s_name   | CGPA | s_branch | S_dob      | T_company | T_Fee | T_year |
++------+------+----------+----------+------+----------+------------+-----------+-------+--------+
+|   50 |    1 |       10 | Ananya   |    9 | Computer | 2006-02-25 | Wipro     |  2000 |   2025 |
+|   50 |   10 |       50 | Anil     |  9.1 | IT       | 2005-04-25 | Wipro     |  2000 |   2025 |
+|   50 |   15 |       10 | anya     |    9 | Computer | 2006-02-25 | Wipro     |  2000 |   2025 |
+|   51 |    2 |       20 | David    |  8.5 | IT       | 2005-03-15 | TCS       |  4600 |   2019 |
+|   51 |    5 |       50 | Diana    |  7.2 | Computer | 2005-11-22 | TCS       |  4600 |   2019 |
+|   51 |    8 |       30 | Dev      |  7.5 | IT       | 2004-09-10 | TCS       |  4600 |   2019 |
+|   51 |   12 |       10 | Shantanu |    9 | Computer | 2006-02-25 | TCS       |  4600 |   2019 |
+|   51 |   13 |       20 | Shantanu |    9 | Computer | 2006-02-25 | TCS       |  4600 |   2019 |
+|   52 |    3 |       30 | Alice    |  7.8 | Mech     | 2006-07-20 | Tata      |  3000 |   2021 |
+|   52 |    6 |       10 | Arjun    |    8 | IT       | 2006-01-30 | Tata      |  3000 |   2021 |
+|   52 |    9 |       40 | Aditya   |  8.2 | Computer | 2006-08-05 | Tata      |  3000 |   2021 |
++------+------+----------+----------+------+----------+------------+-----------+-------+--------+
+11 rows in set (0.00 sec)
+
+mysql> SELECT s.s_name FROM Student s JOIN Training t ON s.T_id = t.T_id WHERE t.T_company = 'TCS' AND t.T_year = 2019;
++----------+
+| s_name   |
++----------+
+| David    |
+| Diana    |
+| Dev      |
+| Shantanu |
+| Shantanu |
++----------+
+5 rows in set (0.00 sec)
+
+9. Create a view showing the Student and Training details.
+mysql> CREATE VIEW Student_Training AS SELECT s.*, t.T_company,t.T_year,t.T_fee FROM Student s NATURAL JOIN Training t;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> SELECT * FROM Student_Training;
++------+----------+------+----------+------+----------+------------+-----------+--------+-------+
+| s_id | Drive_id | T_id | s_name   | CGPA | s_branch | S_dob      | T_company | T_year | T_fee |
++------+----------+------+----------+------+----------+------------+-----------+--------+-------+
+|    1 |       10 |   50 | Ananya   |    9 | Computer | 2006-02-25 | Wipro     |   2025 |  2000 |
+|   10 |       50 |   50 | Anil     |  9.1 | IT       | 2005-04-25 | Wipro     |   2025 |  2000 |
+|   15 |       10 |   50 | anya     |    9 | Computer | 2006-02-25 | Wipro     |   2025 |  2000 |
+|    2 |       20 |   51 | David    |  8.5 | IT       | 2005-03-15 | TCS       |   2019 |  4600 |
+|    5 |       50 |   51 | Diana    |  7.2 | Computer | 2005-11-22 | TCS       |   2019 |  4600 |
+|    8 |       30 |   51 | Dev      |  7.5 | IT       | 2004-09-10 | TCS       |   2019 |  4600 |
+|   12 |       10 |   51 | Shantanu |    9 | Computer | 2006-02-25 | TCS       |   2019 |  4600 |
+|   13 |       20 |   51 | Shantanu |    9 | Computer | 2006-02-25 | TCS       |   2019 |  4600 |
+|    3 |       30 |   52 | Alice    |  7.8 | Mech     | 2006-07-20 | Tata      |   2021 |  3000 |
+|    6 |       10 |   52 | Arjun    |    8 | IT       | 2006-01-30 | Tata      |   2021 |  3000 |
+|    9 |       40 |   52 | Aditya   |  8.2 | Computer | 2006-08-05 | Tata      |   2021 |  3000 |
++------+----------+------+----------+------+----------+------------+-----------+--------+-------+
+11 rows in set (0.01 sec)
+
+
+10. Perform Manipulation on simple view-Insert, update, delete, drop view.
+
+mysql> UPDATE Student_Training st SET st.s_branch = 'ENTC' WHERE st.s_branch = 'Mech';
+Query OK, 1 row affected (0.03 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM Student_Training;
++------+----------+------+----------+------+----------+------------+-----------+--------+-------+
+| s_id | Drive_id | T_id | s_name   | CGPA | s_branch | S_dob      | T_company | T_year | T_fee |
++------+----------+------+----------+------+----------+------------+-----------+--------+-------+
+|    1 |       10 |   50 | Ananya   |    9 | Computer | 2006-02-25 | Wipro     |   2025 |  2000 |
+|   10 |       50 |   50 | Anil     |  9.1 | IT       | 2005-04-25 | Wipro     |   2025 |  2000 |
+|   15 |       10 |   50 | anya     |    9 | Computer | 2006-02-25 | Wipro     |   2025 |  2000 |
+|    2 |       20 |   51 | David    |  8.5 | IT       | 2005-03-15 | TCS       |   2019 |  4600 |
+|    5 |       50 |   51 | Diana    |  7.2 | Computer | 2005-11-22 | TCS       |   2019 |  4600 |
+|    8 |       30 |   51 | Dev      |  7.5 | IT       | 2004-09-10 | TCS       |   2019 |  4600 |
+|   12 |       10 |   51 | Shantanu |    9 | Computer | 2006-02-25 | TCS       |   2019 |  4600 |
+|   13 |       20 |   51 | Shantanu |    9 | Computer | 2006-02-25 | TCS       |   2019 |  4600 |
+|    3 |       30 |   52 | Alice    |  7.8 | ENTC     | 2006-07-20 | Tata      |   2021 |  3000 |
+|    6 |       10 |   52 | Arjun    |    8 | IT       | 2006-01-30 | Tata      |   2021 |  3000 |
+|    9 |       40 |   52 | Aditya   |  8.2 | Computer | 2006-08-05 | Tata      |   2021 |  3000 |
++------+----------+------+----------+------+----------+------------+-----------+--------+-------+
+11 rows in set (0.00 sec)
+
+mysql> INSERT INTO Student_Training(s_id,Drive_id,T_id,s_name,CGPA,s_branch,S_dob,T_company,T_year,T_fee) VALUES (14,60,55,'DEMO',9.90,'ECE','2003-05-30',Wipro,2021,5000);
+ERROR 1054 (42S22): Unknown column 'Wipro' in 'field list'
+mysql> INSERT INTO Student_Training(s_id,Drive_id,T_id,s_name,CGPA,s_branch,S_dob,T_company,T_year,T_fee) VALUES (14,60,55,'DEMO',9.90,'ECE','2003-05-30','Wipro',2021,5000);
+ERROR 1393 (HY000): Can not modify more than one base table through a join view 'te31470_db.Student_Training'
+mysql> 
+
+mysql> CREATE view TEMP as SELECT s_id, s_branch from Student;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> SELECT * FROM TEMP;
++------+----------+
+| s_id | s_branch |
++------+----------+
+|    1 | Computer |
+|    2 | IT       |
+|    3 | ENTC     |
+|    5 | Computer |
+|    6 | IT       |
+|    8 | IT       |
+|    9 | Computer |
+|   10 | IT       |
+|   12 | Computer |
+|   13 | Computer |
+|   15 | Computer |
++------+----------+
+11 rows in set (0.58 sec)
+
+mysql> DELETE FROM TEMP Where s_branch = 'ENTC';
+Query OK, 1 row affected (1.51 sec)
+
+mysql> SELECT * FROM TEMP;
++------+----------+
+| s_id | s_branch |
++------+----------+
+|    1 | Computer |
+|    2 | IT       |
+|    5 | Computer |
+|    6 | IT       |
+|    8 | IT       |
+|    9 | Computer |
+|   10 | IT       |
+|   12 | Computer |
+|   13 | Computer |
+|   15 | Computer |
++------+----------+
+10 rows in set (0.52 sec)
+
+mysql> 
+
+mysql> DROP VIEW TEMP;
+Query OK, 0 rows affected (0.00 sec)
+
+
+
