@@ -40,6 +40,18 @@ mysql> SELECT * FROM Borrower;
 +---------+---------------+-------------------+--------+
 3 rows in set (0.00 sec)
 
+mysql> INSERT INTO Fine (Roll_no, Date, Amt) VALUES
+    -> (101, '2025-07-20', 50); 
+Query OK, 1 row affected (0.04 sec)
+
+mysql> SELECT * FROM Fine;
++---------+------------+------+
+| Roll_no | Date       | Amt  |
++---------+------------+------+
+|     101 | 2025-07-20 |   50 |
++---------+------------+------+
+1 row in set (0.00 sec)
+
 
 
 
@@ -54,3 +66,81 @@ After submitting the book, status will change from I to R.
 If condition offine is true, then details will be stored into fine table.
 Also handles the exception by named exception handler or user define
 exception handler.
+
+mysql> DELIMITER $$
+mysql> 
+mysql> CREATE PROCEDURE ReturnBookAndCalculateFine (
+    ->     IN in_Roll_no INT,
+    ->     IN in_Name_of_Book VARCHAR(255)
+    -> )
+    -> BEGIN
+    ->     DECLARE v_DateOfIssue DATE;
+    ->     DECLARE v_Status CHAR(1);
+    ->     DECLARE v_Days INT;
+    ->     DECLARE v_FineAmt INT DEFAULT 0;
+    ->     DECLARE v_Now DATE;
+    ->     
+    ->     DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    ->     BEGIN
+    ->         -- Handle any SQL exceptions here
+    ->         ROLLBACK;
+    ->         SELECT 'Error: Unable to process return and fine calculation.' AS ErrorMessage;
+    ->     END;
+    -> 
+    ->     START TRANSACTION;
+    -> 
+    ->     -- Get Date of Issue and Status for the given Roll_no and Book
+    ->     SELECT Date_of_Issue, Status
+    ->     INTO v_DateOfIssue, v_Status
+    ->     FROM Borrower
+    ->     WHERE Roll_no = in_Roll_no AND Name_of_Book = in_Name_of_Book AND Status = 'I'
+    ->     LIMIT 1;
+    -> 
+    ->     IF v_DateOfIssue IS NULL THEN
+    ->         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No issued book found for this Roll_no and Book or book already returned.';
+    ->     END IF;
+    -> 
+    ->     SET v_Now = CURDATE();
+    ->     SET v_Days = DATEDIFF(v_Now, v_DateOfIssue);
+    -> 
+    ->     -- Calculate fine based on days
+    ->     IF v_Days < 15 THEN
+    ->         SET v_FineAmt = v_Days * 5;
+    ->     ELSEIF v_Days BETWEEN 15 AND 30 THEN
+    ->         SET v_FineAmt = v_Days * 10;
+    ->     ELSEIF v_Days > 30 THEN
+    ->         SET v_FineAmt = v_Days * 50;
+    ->     END IF;
+    -> 
+    ->     -- Update status to Returned
+    ->     UPDATE Borrower
+    ->     SET Status = 'R'
+    ->     WHERE Roll_no = in_Roll_no AND Name_of_Book = in_Name_of_Book AND Status = 'I';
+    -> 
+    ->     -- Insert fine record if fine applies
+    ->     IF v_FineAmt > 0 THEN
+    ->         INSERT INTO Fine (Roll_no, Date, Amt)
+    ->         VALUES (in_Roll_no, v_Now, v_FineAmt);
+    ->     END IF;
+    -> 
+    ->     COMMIT;
+    -> 
+    ->     SELECT CONCAT('Book returned successfully. Fine amount: Rs ', v_FineAmt) AS Message;
+    -> 
+    -> END $$
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> CALL ReturnBookAndCalculateFine(101, 'Database Systems');
++-------------------------------------------------+
+| Message                                         |
++-------------------------------------------------+
+| Book returned successfully. Fine amount: Rs 280 |
++-------------------------------------------------+
+1 row in set (0.04 sec)
+
+Query OK, 3 rows affected (0.04 sec)
+
+mysql> 
+
