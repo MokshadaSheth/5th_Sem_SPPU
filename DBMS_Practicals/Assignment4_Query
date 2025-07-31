@@ -144,3 +144,108 @@ Query OK, 3 rows affected (0.04 sec)
 
 mysql> 
 
+
+
+-------------------------------------------Area Calculator------------------------------------------
+ DELIMITER $$
+ CREATE PROCEDURE CalArea(
+       IN in_radi float
+     )
+     BEGIN
+
+     DECLARE v_area FLOAT(5,2);
+    
+     DECLARE EXIT HANDLER FOR SQLEXCEPTION
+     BEGIN
+     ROLLBACK;
+     SELECT 'Error: Error in caluclation area' AS ErrorMsg;
+     END;
+     
+     START TRANSACTION;
+     IF in_radi < 5 OR in_radi > 9 THEN
+       SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid Radius';
+     END IF;
+     SET v_area = PI() * in_radi * in_radi;
+     INSERT INTO RadiArea(Radius, Area) VALUES (in_radi, v_area);
+     
+     COMMIT;
+    
+     SELECT CONCAT('Area is: ', v_area) AS Message;
+     END $$
+    
+    DELIMITER ;
+    Query OK, 0 rows affected (0.08 sec)
+
+    mysql> DELIMITER $$
+mysql>  CREATE PROCEDURE CalArea(
+    ->        IN in_radi float
+    ->      )
+    ->      BEGIN
+    -> 
+    ->      DECLARE v_area FLOAT;
+    ->     
+    ->      DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    ->      BEGIN
+    ->      ROLLBACK;
+    ->      SELECT 'Error: Error in caluclation area' AS ErrorMsg;
+    ->      END;
+    ->      
+    ->      START TRANSACTION;
+    ->     
+    ->      SET v_area = PI() * in_radi * in_radi;
+    ->      INSERT INTO RadiArea(Radius, Area) VALUES (in_radi, v_area);
+    ->      
+    ->      COMMIT;
+    ->     
+    ->      SELECT CONCAT('Area is: ', v_area) AS Message;
+    ->      END $$
+Query OK, 0 rows affected (0.10 sec)
+
+mysql>     
+mysql>     DELIMITER ;
+mysql> CALL CalArea(5);
++------------------+
+| Message          |
++------------------+
+| Area is: 78.5398 |
++------------------+
+1 row in set (0.05 sec)
+
+Query OK, 1 row affected (0.05 sec)
+
+mysql> SELECT * FROM RadiArea;
++--------+---------+
+| Radius | Area    |
++--------+---------+
+|      5 | 78.5398 |
++--------+---------+
+1 row in set (0.00 sec)
+
+mysql> 
+
+mysql> CREATE TABLE RadiArea(Radius float, Area float(5,2));
+Query OK, 0 rows affected (0.25 sec)
+
+mysql> CALL CalArea(5);
++------------------+
+| Message          |
++------------------+
+| Area is: 78.5398 |
++------------------+
+1 row in set (0.03 sec)
+
+Query OK, 1 row affected (0.03 sec)
+
+mysql> SELECT * FROM RadiArea;
++--------+-------+
+| Radius | Area  |
++--------+-------+
+|      5 | 78.54 |
++--------+-------+
+1 row in set (0.00 sec)
+
+mysql> 
+
+
+
+
