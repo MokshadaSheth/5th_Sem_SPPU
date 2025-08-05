@@ -11,5 +11,94 @@ Result(Roll, Name, Class)
 
 
 1. Stud_Marks Table:-
-	CREATE TABLE Stud_Marks 
+	CREATE TABLE Stud_Marks (Name varchar(30) NOT NULL, total_marks int, PRIMARY KEY(Name));
 	
+2. Result Table:
+	CREATE TABLE Result(Roll int AUTO_INCREMENT, Name varchar(30), Class varchar(10), FOREIGN KEY(Name) REFERENCES Stud_Marks(Name));
+	
+	
+3. Procedure:
+
+DELIMITER $$
+
+CREATE PROCEDURE procGrade(
+    IN name varchar(30)
+    )
+    BEGIN
+    
+    DECLARE v_marks INT;
+    DECLARE v_class varchar(10);
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_marks = NULL;
+     
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+    ROLLBACK;
+    SELECT 'Error: Error in calculation of marks' AS ErrorMsg;
+    END;
+    
+    START TRANSACTION;
+    
+    IF name IS NULL OR LENGTH(TRIM(name)) = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Name cannot be null or empty.';
+    
+    -- Check name length
+    ELSEIF LENGTH(name) < 2 OR LENGTH(name) > 30 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Name must be between 2 and 30 characters.';
+    
+    -- Check if the name contains only letters and spaces (using REGEXP)
+    ELSEIF name NOT REGEXP '^[A-Za-z ]+$' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Name must contain only letters and spaces.';
+    END IF;
+    
+    -- If valid, you can proceed with other logic here
+    SELECT 'Name is valid.' AS Message;
+    
+    SELECT total_marks INTO v_marks FROM Stud_Marks WHERE Stud_Marks.name = name;
+    
+    IF v_marks IS NULL THEN
+    	SIGNAL SQLSTATE '45000'
+    	SET MESSAGE_TEXT = 'Sudent doest not exists';
+    END IF;
+    
+    IF v_marks > 1500 OR v_marks < 1 THEN
+    	SIGNAL SQLSTATE '45000'
+    	SET MESSAGE_TEXT = 'Invalid Marks in Stud_Marks Table';
+    END IF;
+    	
+    IF v_marks > 990 THEN
+    	SET v_class = 'Distinction';
+    ELSEIF v_marks BETWEEN 900 AND 989 THEN
+    	SET v_class = 'First Class';
+    ELSEIF v_marks BETWEEN 825 and 899 THEN
+    	SET v_class  = 'Second Class';
+    ELSEIF v_marks < 825 THEN 
+    	SET v_class = 'Fail';
+    END IF;
+    
+    INSERT INTO Result(Name, Class) VALUES(name,v_class);
+    
+    COMMIT;
+    
+    SELECT CONCAT('Class assigned as: ', v_class) AS Message;
+    
+    END $$
+    
+    DELIMITER ;
+    
+4. Call procedure:
+	CALL procGrade('Mokshada');
+	procGrade(' ');
+    
+5. Insert in Stud_Marks:
+	INSERT INTO Stud_Marks(Name, total_marks) VALUES
+	('Mokshada', 1488),
+	('San' , 1455),
+	('XYZ', 900),
+	(' ' , 500),
+	('Abc123', 600),
+	('Gauri', 830),
+	('Sayali', 902);

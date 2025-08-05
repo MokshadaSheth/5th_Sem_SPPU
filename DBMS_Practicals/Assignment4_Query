@@ -203,25 +203,7 @@ Query OK, 0 rows affected (0.10 sec)
 
 mysql>     
 mysql>     DELIMITER ;
-mysql> CALL CalArea(5);
-+------------------+
-| Message          |
-+------------------+
-| Area is: 78.5398 |
-+------------------+
-1 row in set (0.05 sec)
 
-Query OK, 1 row affected (0.05 sec)
-
-mysql> SELECT * FROM RadiArea;
-+--------+---------+
-| Radius | Area    |
-+--------+---------+
-|      5 | 78.5398 |
-+--------+---------+
-1 row in set (0.00 sec)
-
-mysql> 
 
 mysql> CREATE TABLE RadiArea(Radius float, Area float(5,2));
 Query OK, 0 rows affected (0.25 sec)
