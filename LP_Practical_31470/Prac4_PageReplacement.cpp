@@ -115,6 +115,44 @@ void optimal(vector<int> pages, int capacity) {
     cout << "Total Misses (Optimal): " << misses << "\n";
 }
 
+// MRU Algorithm
+void mru(vector<int> pages, int capacity) {
+    cout << "\n===== MRU Page Replacement =====\n";
+    vector<int> frames;
+    unordered_map<int, int> lastUsed; // to store last usage index of pages in frames
+    int misses = 0;
+
+    for (int i = 0; i < pages.size(); i++) {
+        int page = pages[i];
+        cout << "Step " << i+1 << " | Page: " << page << " | ";
+
+        // If page is not in frames (miss)
+        if (find(frames.begin(), frames.end(), page) == frames.end()) {
+            if (frames.size() < capacity) {
+                frames.push_back(page);
+            } else {
+                // find most recently used page (max lastUsed index)
+                int mruPage = frames[0], maxIndex = lastUsed[mruPage];
+                for (int f : frames) {
+                    if (lastUsed[f] > maxIndex) {
+                        maxIndex = lastUsed[f];
+                        mruPage = f;
+                    }
+                }
+                replace(frames.begin(), frames.end(), mruPage, page);
+            }
+            misses++;
+            cout << "Miss ";
+        } else {
+            cout << "Hit  ";
+        }
+        lastUsed[page] = i; // update last used index
+        displayFrames(frames);
+        cout << endl;
+    }
+    cout << "Total Misses (MRU): " << misses << "\n";
+}
+
 int main() {
     int n, capacity, choice;
     cout << "Enter number of pages: ";
@@ -132,7 +170,8 @@ int main() {
         cout << "1. FIFO\n";
         cout << "2. LRU\n";
         cout << "3. Optimal\n";
-        cout << "4. Exit\n";
+        cout << "4. MRU\n";
+        cout << "5. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -140,10 +179,11 @@ int main() {
             case 1: fifo(pages, capacity); break;
             case 2: lru(pages, capacity); break;
             case 3: optimal(pages, capacity); break;
-            case 4: cout << "Exiting...\n"; break;
+            case 4: mru(pages, capacity); break;
+            case 5: cout << "Exiting...\n"; break;
             default: cout << "Invalid choice! Try again.\n";
         }
-    } while(choice != 4);
+    } while(choice != 5);
 
     return 0;
 }
