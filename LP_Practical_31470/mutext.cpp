@@ -178,8 +178,16 @@ int main()
             cout << "\n[Mutex Application] Starting...\n";
             thread t1(&Mutex_app::withdraw, &mutObj, 1);
             thread t2(&Mutex_app::withdraw, &mutObj, 2);
+            thread t3(&Mutex_app::withdraw, &mutObj, 3);
+            thread t4(&Mutex_app::withdraw, &mutObj, 4);
+            thread t5(&Mutex_app::withdraw, &mutObj, 5);
+
+
             t1.join();
             t2.join();
+            t3.join();
+            t4.join();
+            t5.join();
             cout << "[Mutex Application] Finished.\n";
         }
         else if (choice == 2)

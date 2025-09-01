@@ -77,7 +77,7 @@ public:
             cout << "|" << setw(5) << allBlocks[i].id;
             cout << "|" << setw(5) << allBlocks[i].totalmem;
             cout << "|" << setw(5) << allBlocks[i].remaining;
-            cout << "|" << setw(5) << allBlocks[i].isFree;
+            cout << "|" << setw(5) << (allBlocks[i].isFree == 1 ? "Free" : "Occ.");
             cout << "|\n";
         }
         cout << "+-----------------------+\n";
@@ -141,11 +141,55 @@ public:
         {
             cout << "|" << setw(5) << allProcess[i].no;
             cout << "|" << setw(5) << allProcess[i].size;
-            cout << "|" << setw(5) << allProcess[i].isAllocated;
+            cout << "|" << setw(5) << (allProcess[i].isAllocated == 1 ? "Yes" : "No");
             cout << "|\n";
         }
         cout << "+-------------------+\n";
     }
+    void displayCombine(Memory obj)
+    {
+        cout << "\n----------------------------After Allocation---------------------\n\n";
+        cout << "+-----------------------+-----------------------------+\n";
+        cout << "|      Process Info     |        Memory Block Info     |\n";
+        cout << "+-----+------+--------+ +-----+-------+-------+--------+\n";
+        cout << "| ID  | Size | Alloc? | | ID  | Total | Rem   | Status |\n";
+        cout << "+-----+------+--------+ +-----+-------+-------+--------+\n";
+
+        // Assuming both process and memory block counts are the same
+        int maxRows = max(totalProcess, obj.totalBlocks);
+        for (int i = 0; i < maxRows; i++)
+        {
+            // Print Process info
+            if (i < totalProcess)
+            {
+                cout << "| " << setw(3) << allProcess[i].no << " ";
+                cout << "| " << setw(4) << allProcess[i].size << " ";
+                cout << "| " << setw(6) << (allProcess[i].isAllocated == 1 ? "Yes" : "No") << " |";
+            }
+            else
+            {
+                cout << "|     |      |        |";
+            }
+
+            // Print Memory block info
+            if (i < obj.totalBlocks)
+            {
+                cout << " | " << setw(3) << obj.allBlocks[i].id << " ";
+                cout << "| " << setw(5) << obj.allBlocks[i].totalmem << " ";
+                cout << "| " << setw(5) << obj.allBlocks[i].remaining << " ";
+                cout << "| " << setw(6) << (obj.allBlocks[i].isFree == 1 ? "Free" : "Occ.") << " |";
+            }
+            else
+            {
+                cout << " |     |       |       |        |";
+            }
+
+            cout << "\n";
+        }
+
+        cout << "+-----+------+--------+ +-----+-------+-------+--------+\n";
+    }
+
     /*            Allocation Startegies             */
     void firstFit(Memory obj)
     {
@@ -170,9 +214,7 @@ public:
                 cout << "\nAllocated Memory for " << allProcess[i].no << endl;
             }
         }
-
-        obj.displayMem();
-        displayProcess();
+        displayCombine(obj);
     }
 
     void bestFit(Memory obj)
@@ -205,9 +247,7 @@ public:
                 cout << "\nAllocated Memory for " << allProcess[i].no << endl;
             }
         }
-
-        obj.displayMem();
-        displayProcess();
+        displayCombine(obj);
     }
 
     void worstFit(Memory obj)
@@ -242,18 +282,17 @@ public:
             }
         }
 
-        obj.displayMem();
-        displayProcess();
+        displayCombine(obj);
     }
     void nextFit(Memory obj)
     {
-        int prev=0;
+        int prev = 0;
         for (int i = 0; i < totalProcess; i++)
         {
             int pSize = allProcess[i].size;
             bool flag = false;
             int n = obj.totalBlocks;
-            for (int j = (prev+1)%n; j != prev; j++)
+            for (int j = (prev + 1) % n; j != prev; j++)
             {
 
                 if (obj.allBlocks[j].remaining >= pSize && obj.allBlocks[j].isFree == true)
@@ -271,18 +310,18 @@ public:
                 cout << "\nAllocated Memory for " << allProcess[i].no << endl;
             }
         }
-
-        obj.displayMem();
-        displayProcess();
+        displayCombine(obj);
     }
 };
 
-int main() {
+int main()
+{
     Memory obj;
     ProcessAllocation obj1;
     int choice;
 
-    do {
+    do
+    {
         cout << "\n====== Memory Allocation Menu ======\n";
         cout << "1. First Fit\n";
         cout << "2. Best Fit\n";
@@ -292,35 +331,36 @@ int main() {
         cout << "Enter your choice: ";
         cin >> choice;
 
-        switch(choice) {
-            case 1:
-                obj.takeIP();
-                obj1.takeP();
-                obj1.firstFit(obj);
-                break;
-            case 2:
-                obj.takeIP();
-                obj1.takeP();
-                obj1.bestFit(obj);
-                break;
-            case 3:
-                obj.takeIP();
-                obj1.takeP();
-                obj1.worstFit(obj);
-                break;
-            case 4:
-                obj.takeIP();
-                obj1.takeP();
-                obj1.nextFit(obj);
-                break;
-            case 5:
-                cout << "Exiting program. Goodbye!\n";
-                break;
-            default:
-                cout << "Invalid choice! Please enter a number between 1 and 5.\n";
+        switch (choice)
+        {
+        case 1:
+            obj.takeIP();
+            obj1.takeP();
+            obj1.firstFit(obj);
+            break;
+        case 2:
+            obj.takeIP();
+            obj1.takeP();
+            obj1.bestFit(obj);
+            break;
+        case 3:
+            obj.takeIP();
+            obj1.takeP();
+            obj1.worstFit(obj);
+            break;
+        case 4:
+            obj.takeIP();
+            obj1.takeP();
+            obj1.nextFit(obj);
+            break;
+        case 5:
+            cout << "Exiting program. Goodbye!\n";
+            break;
+        default:
+            cout << "Invalid choice! Please enter a number between 1 and 5.\n";
         }
 
-    } while(choice != 5);
+    } while (choice != 5);
 
     return 0;
 }
