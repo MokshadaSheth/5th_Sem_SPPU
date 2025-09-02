@@ -1,0 +1,82 @@
+Cursors: (All types: Implicit, Explicit, Cursor FOR Loop, Parameterized Cursor) Write a PL/SQL block of code using parameterized Cursor, that will merge the data available in the newly created table Cust_New with the data available in the table Cust_Old. If the data in the first table already exist in the second table then that data should be skipped. Frame the separate problem statement for writing PL/SQL block to implement all types
+
+
+
+CREATE TABLE N_EmpId(id INT PRIMARY KEY, name varchar(30), dept varchar(20));
+
+INSERT INTO N_EmpId (id, name, dept) VALUES
+(3, 'Charlie', 'IT'),
+(4, 'Diana', 'Marketing'),
+(5, 'Ethan', 'IT'),
+(6, 'Fiona', 'HR'),
+(7, 'George', 'Finance'),
+(8, 'Hannah', 'Marketing');
+
+CREATE TABLE O_EmpId(id INT PRIMARY KEY, name varchar(30), dept varchar(20));
+
+INSERT INTO O_EmpId (id, name, dept) VALUES
+(1, 'Alice', 'HR'),
+(2, 'Bob', 'Finance'),
+(3, 'Charlie', 'IT'),
+(4, 'Diana', 'Marketing'),
+(5, 'Ethan', 'IT');
+
+DELIMITER $$
+
+CREATE PROCEDURE addInOld()
+BEGIN
+    -- Variables to hold fetched row values
+    DECLARE v_id INT;
+    DECLARE v_name VARCHAR(30);
+    DECLARE v_dept VARCHAR(20);
+    
+    -- Declare done flag for cursor end
+    DECLARE done INT DEFAULT FALSE;
+    
+    -- Declare cursor for selecting all records from N_EmpId
+    DECLARE cur CURSOR FOR SELECT id, name, dept FROM N_EmpId;
+    
+    -- Handler to set done = TRUE when no more rows
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    -- Open the cursor
+    OPEN cur;
+    
+    read_loop: LOOP
+        FETCH cur INTO v_id, v_name, v_dept;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        
+        -- Check if record already exists in O_EmpId
+        IF NOT EXISTS (SELECT 1 FROM O_EmpId WHERE id = v_id) THEN
+            INSERT INTO O_EmpId (id, name, dept) VALUES (v_id, v_name, v_dept);
+        END IF;
+    END LOOP;
+    
+    CLOSE cur;
+ 
+END$$
+
+DELIMITER ;
+
+
+mysql> CALL addInOld();
+Query OK, 3 rows affected (0.11 sec)
+
+mysql> SELECT * FROM O_EmpId;
++----+---------+-----------+
+| id | name    | dept      |
++----+---------+-----------+
+|  1 | Alice   | HR        |
+|  2 | Bob     | Finance   |
+|  3 | Charlie | IT        |
+|  4 | Diana   | Marketing |
+|  5 | Ethan   | IT        |
+|  6 | Fiona   | HR        |
+|  7 | George  | Finance   |
+|  8 | Hannah  | Marketing |
++----+---------+-----------+
+8 rows in set (0.00 sec)
+
+
