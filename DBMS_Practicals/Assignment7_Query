@@ -1,0 +1,107 @@
+
+Database Trigger (AIl Types: Row level and Statement level triggers, Before
+and After Triggers).
+Write a database trigger on Library table. The System should keep track of the records
+that are being updated or deleted. The old value of updated or deleted records should
+be added in Library Audit table.
+
+1. Creating Library Table:
+   CREATE TABLE Library(book_id INT PRIMARY KEY, book_name varchar(30), price float, is_issued BOOLEAN DEFAULT FALSE);
+   
+   INSERT INTO Library(book_id, book_name, price) VALUES(1, 'DBMS' , 200.10);
+   INSERT INTO Library(book_id, book_name, price, is_issued) VALUES(2, 'SPOS' , 300, TRUE);
+   INSERT INTO Library(book_id, book_name, price, is_issued) VALUES
+   (3, 'DS' , 500, TRUE), (4, 'CN',300, FALSE), (5,'TOC', 400, TRUE);
+   
+   mysql> SELECT * FROM Library;
++---------+-----------+-------+-----------+
+| book_id | book_name | price | is_issued |
++---------+-----------+-------+-----------+
+|       1 | DBMS      | 200.1 |         0 |
+|       2 | SPOS      |   300 |         1 |
+|       3 | DS        |   500 |         1 |
+|       4 | CN        |   300 |         0 |
+|       5 | TOC       |   400 |         1 |
++---------+-----------+-------+-----------+
+5 rows in set (0.00 sec)
+
+
+2. Creating Library Audit Table: 
+	CREATE TABLE Library_Audit(book_id INT, book_name varchar(30), price float, is_issued BOOLEAN DEFAULT FALSE, action varchar(10));
+	
+	
+3. Writing a trigger procedure:
+
+	DELIMITER $$
+	
+	CREATE TRIGGER updateAudit
+	BEFORE
+	UPDATE 
+	ON Library
+	FOR EACH ROW
+	
+	BEGIN
+		INSERT INTO Library_Audit(book_id, book_name, price, is_issued, action) VALUES
+		(OLD.book_id, OLD.book_name, OLD.price, OLD.is_issued, 'Update');
+	END $$
+	
+	
+	CREATE TRIGGER deleteAudit
+	BEFORE
+	DELETE
+	ON Library
+	FOR EACH ROW
+	
+	BEGIN
+		INSERT INTO Library_Audit(book_id, book_name, price, is_issued, action) VALUES
+		(OLD.book_id, OLD.book_name, OLD.price, OLD.is_issued, 'Delete');
+	END $$
+	
+	DELIMITER ;	
+
+4. Update and Delete Query
+
+	UPDATE Library SET price = 300 WHERE book_id = 5;
+	
+	DELETE FROM Library WHERE book_id = 2;
+	
+Output: 
+	
+mysql> UPDATE Library SET price = 300 WHERE book_id = 5;
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM Library_Audit;
++---------+-----------+-------+-----------+--------+
+| book_id | book_name | price | is_issued | action |
++---------+-----------+-------+-----------+--------+
+|       5 | TOC       |   400 |         1 | Update |
++---------+-----------+-------+-----------+--------+
+1 row in set (0.00 sec)
+
+mysql> DELETE FROM Library WHERE book_id = 2;
+Query OK, 1 row affected (0.03 sec)
+
+mysql> SELECT * FROM Library_Audit;
++---------+-----------+-------+-----------+--------+
+| book_id | book_name | price | is_issued | action |
++---------+-----------+-------+-----------+--------+
+|       5 | TOC       |   400 |         1 | Update |
+|       2 | SPOS      |   300 |         1 | Delete |
++---------+-----------+-------+-----------+--------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Library;
++---------+-----------+-------+-----------+
+| book_id | book_name | price | is_issued |
++---------+-----------+-------+-----------+
+|       1 | DBMS      | 200.1 |         0 |
+|       3 | DS        |   500 |         1 |
+|       4 | CN        |   300 |         0 |
+|       5 | TOC       |   300 |         1 |
++---------+-----------+-------+-----------+
+4 rows in set (0.00 sec)
+
+mysql> 
+
+
