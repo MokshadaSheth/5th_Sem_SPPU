@@ -1,8 +1,4 @@
-for(int i=0;i<totalP;i++)
-            // {
-            //     temp.push(allProcess[i]);
-            //     for(int j=i; j>0;j--)
-            //     {
-            //         if()
-            //     }
-            // }
+while(!fin.eof())
+        // {
+        //     /*Now need to check where the current code should be*/
+        // }
