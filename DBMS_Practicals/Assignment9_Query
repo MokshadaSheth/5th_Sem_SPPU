@@ -1,0 +1,40 @@
+🔹 Create Collection
+db.createCollection("students")
+
+🔹 Insert Documents
+db.students.insertOne({ name: "Mokshada", age: 22, course: "Computer Engineering" })
+
+db.students.insertMany([
+  { name: "Rohan", age: 21, course: "IT" },
+  { name: "Aditi", age: 23, course: "Computer Engineering" },
+  { name: "Priya", age: 20, course: "AI" }
+])
+
+🔹 Read Documents
+db.students.find()
+
+db.students.find({ course: "Computer Engineering" })
+
+db.students.find({ $or: [ { age: { $lt: 22 } }, { course: "IT" } ] })
+
+🔹 Update Documents
+db.students.updateOne(
+  { name: "Rohan" },
+  { $set: { age: 22 } }
+)
+
+db.students.updateMany(
+  { course: "Computer Engineering" },
+  { $set: { graduate: true } }
+)
+
+db.students.updateOne(
+  { _id: 1 },
+  { $set: { name: "Priya", age: 24, course: "AI" } },
+  { upsert: true }
+)
+
+🔹 Delete Documents
+db.students.deleteOne({ name: "Aditi" })
+
+db.students.deleteMany({ course: "IT" })
