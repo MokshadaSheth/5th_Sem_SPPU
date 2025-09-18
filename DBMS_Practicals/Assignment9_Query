@@ -1,0 +1,224 @@
+Assignment No. 9
+
+MongoDB Queries:
+Design and Develop MongoDB Queries using CRUD operations, SAVE method, logical operators etc.)
+
+
+> use test
+switched to db test
+> db.createCollection("myCollection")
+{ "ok" : 1 }
+
+
+-----------Insert Data--------------------
+ db.myCollection.save({"id":2,"Name":"Sanskruti", "Marks":95,"Dept":"Comp","Age":20})
+WriteResult({ "nInserted" : 1 })
+> db.myCollection.save({"id":3,"Name":"Shraddha", "Marks":94,"Dept":"Comp","Age":20})
+WriteResult({ "nInserted" : 1 })
+> db.myCollection.save({"id":4,"Name":"Gauri", "Marks":90,"Dept":"Comp","Age":21})
+WriteResult({ "nInserted" : 1 })
+> db.myCollection.save({"id":4,"Name":"Sayali", "Marks":80,"Dept":"Comp","Age":25})
+WriteResult({ "nInserted" : 1 })
+
+> db.myCollection.insertMany([{"id":2,"title":"COEP"},{"id":3,"title":"VIT"}])
+{
+	"acknowledged" : true,
+	"insertedIds" : [
+		ObjectId("68cb88506651ec94f428ce32"),
+		ObjectId("68cb88506651ec94f428ce33")
+	]
+}
+> db.myCollection.find().pretty()
+{ "_id" : ObjectId("68cb82fa659e34ba19c0b092"), "id" : 1, "title" : "PICT" }
+{ "_id" : ObjectId("68cb88506651ec94f428ce32"), "id" : 2, "title" : "COEP" }
+{ "_id" : ObjectId("68cb88506651ec94f428ce33"), "id" : 3, "title" : "VIT" }
+
+
+-----------Display Data-------------------
+> db.myCollection.find().pretty()
+{
+	"_id" : ObjectId("68cb8e46e5973c89a5d81a0b"),
+	"id" : 1,
+	"Name" : "Mokshada",
+	"Marks" : 95,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8eede5973c89a5d81a0c"),
+	"id" : 2,
+	"Name" : "Sanskruti",
+	"Marks" : 95,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8f00e5973c89a5d81a0d"),
+	"id" : 3,
+	"Name" : "Shraddha",
+	"Marks" : 94,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8f32e5973c89a5d81a0e"),
+	"id" : 4,
+	"Name" : "Gauri",
+	"Marks" : 90,
+	"Dept" : "Comp",
+	"Age" : 21
+}
+{
+	"_id" : ObjectId("68cb8f43e5973c89a5d81a0f"),
+	"id" : 4,
+	"Name" : "Sayali",
+	"Marks" : 80,
+	"Dept" : "Comp",
+	"Age" : 25
+}
+
+------------Remove Records----------------
+db.myCollection.remove({"title":"PICT"})
+WriteResult({ "nRemoved" : 1 })
+> db.myCollection.remove({"title":"COEP"})
+WriteResult({ "nRemoved" : 1 })
+> db.myCollection.remove({"title":"VIT"})
+WriteResult({ "nRemoved" : 1 })
+
+------------Update Records------------
+> db.myCollection.update({"id":4,"Name":"Sayali"}, {$set:{"id":5,"Name":"Sayali"}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.myCollection.find().pretty()
+{
+	"_id" : ObjectId("68cb8e46e5973c89a5d81a0b"),
+	"id" : 1,
+	"Name" : "Mokshada",
+	"Marks" : 95,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8eede5973c89a5d81a0c"),
+	"id" : 2,
+	"Name" : "Sanskruti",
+	"Marks" : 95,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8f00e5973c89a5d81a0d"),
+	"id" : 3,
+	"Name" : "Shraddha",
+	"Marks" : 94,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8f32e5973c89a5d81a0e"),
+	"id" : 4,
+	"Name" : "Gauri",
+	"Marks" : 90,
+	"Dept" : "Comp",
+	"Age" : 21
+}
+{
+	"_id" : ObjectId("68cb8f43e5973c89a5d81a0f"),
+	"id" : 5,
+	"Name" : "Sayali",
+	"Marks" : 80,
+	"Dept" : "Comp",
+	"Age" : 25
+}
+> 
+
+-----------Logical Operators------------
+> db.myCollection.find({$or:[{"Dept":"Comp"},{"Age":20}]}).pretty()
+{
+	"_id" : ObjectId("68cb8e46e5973c89a5d81a0b"),
+	"id" : 1,
+	"Name" : "Mokshada",
+	"Marks" : 95,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8eede5973c89a5d81a0c"),
+	"id" : 2,
+	"Name" : "Sanskruti",
+	"Marks" : 95,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8f00e5973c89a5d81a0d"),
+	"id" : 3,
+	"Name" : "Shraddha",
+	"Marks" : 94,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8f32e5973c89a5d81a0e"),
+	"id" : 4,
+	"Name" : "Gauri",
+	"Marks" : 90,
+	"Dept" : "Comp",
+	"Age" : 21
+}
+{
+	"_id" : ObjectId("68cb8f43e5973c89a5d81a0f"),
+	"id" : 5,
+	"Name" : "Sayali",
+	"Marks" : 80,
+	"Dept" : "Comp",
+	"Age" : 25
+}
+> db.myCollection.find({$and:[{"Dept":"Comp"},{"Age":20}]}).pretty()
+{
+	"_id" : ObjectId("68cb8e46e5973c89a5d81a0b"),
+	"id" : 1,
+	"Name" : "Mokshada",
+	"Marks" : 95,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8eede5973c89a5d81a0c"),
+	"id" : 2,
+	"Name" : "Sanskruti",
+	"Marks" : 95,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8f00e5973c89a5d81a0d"),
+	"id" : 3,
+	"Name" : "Shraddha",
+	"Marks" : 94,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+
+
+db.myCollection.find({"Marks":{$gt:94},$or:[{"Dept":"Comp"},{"Age":20}]}).pretty()
+{
+	"_id" : ObjectId("68cb8e46e5973c89a5d81a0b"),
+	"id" : 1,
+	"Name" : "Mokshada",
+	"Marks" : 95,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+{
+	"_id" : ObjectId("68cb8eede5973c89a5d81a0c"),
+	"id" : 2,
+	"Name" : "Sanskruti",
+	"Marks" : 95,
+	"Dept" : "Comp",
+	"Age" : 20
+}
+> 
+
+
+
+
