@@ -1,0 +1,8 @@
+1 MOVER &A,
+2 ADD &A,
+3 MOVER &B,
+4 ADD &A,
+5 MOVER &U,
+6 MOVER &V,
+7 ADD &U,
+8 ADD &V,
