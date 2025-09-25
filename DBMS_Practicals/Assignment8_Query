@@ -1,0 +1,144 @@
+CREATE TABLE guests (
+    ->     guest_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     name VARCHAR(255) NOT NULL,
+    ->     email VARCHAR(255),
+    ->     phone VARCHAR(15),
+    ->     address TEXT
+    -> );
+Query OK, 0 rows affected (0.21 sec)
+
+mysql> CREATE TABLE rooms (
+    ->     room_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     room_number VARCHAR(10) NOT NULL,
+    ->     room_type VARCHAR(50),
+    ->     price DECIMAL(10, 2),
+    ->     status VARCHAR(20) DEFAULT 'available'
+    -> );
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> CREATE TABLE reservations (
+    ->     reservation_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     guest_id INT,
+    ->     room_id INT,
+    ->     check_in_date DATE,
+    ->     check_out_date DATE,
+    ->     FOREIGN KEY (guest_id) REFERENCES guests(guest_id),
+    ->     FOREIGN KEY (room_id) REFERENCES rooms(room_id)
+    -> );
+Query OK, 0 rows affected (0.21 sec)
+
+mysql> 
+   
+   
+Java Code Output: 
+	pict@pict-OptiPlex-7010:~/31470/Assignment8/JDBC_prog$ java -cp .:mysql-connector-j-8.0.33.jar HotelManagement
+Hotel Management System
+1. Add Guest
+2. Update Guest
+3. Delete Guest
+4. View Guests
+5. Exit
+Enter your choice: 1
+Enter guest name: Mokshada
+Enter guest email: sheth@gmail.com
+Enter guest phone: 12345
+Enter guest address: Om Shri
+Guest added successfully!
+Hotel Management System
+1. Add Guest
+2. Update Guest
+3. Delete Guest
+4. View Guests
+5. Exit
+Enter your choice: 4
+ID: 1, Name: Mokshada
+Hotel Management System
+1. Add Guest
+2. Update Guest
+3. Delete Guest
+4. View Guests
+5. Exit
+Enter your choice: 2
+Enter guest ID to update: 1
+Enter new guest name: Mokshada Sheth
+Enter new guest email: sheth@gmail.com
+Enter new guest phone: 89756599999
+Enter new guest address: Om Shri Arunoday
+Guest updated successfully!
+Hotel Management System
+1. Add Guest
+2. Update Guest
+3. Delete Guest
+4. View Guests
+5. Exit
+Enter your choice: 4
+ID: 1, Name: Mokshada Sheth
+Hotel Management System
+1. Add Guest
+2. Update Guest
+3. Delete Guest
+4. View Guests
+5. Exit
+Enter your choice: 1
+Enter guest name: San
+Enter guest email: san@gmail.com
+Enter guest phone: 555555558888
+Enter guest address: Koparagaoan
+Guest added successfully!
+Hotel Management System
+1. Add Guest
+2. Update Guest
+3. Delete Guest
+4. View Guests
+5. Exit
+Enter your choice: 2
+Enter guest ID to update: 2
+Enter new guest name: Sanskruti
+Enter new guest email: 
+Enter new guest phone: 
+Enter new guest address: 
+Guest updated successfully!
+Hotel Management System
+1. Add Guest
+2. Update Guest
+3. Delete Guest
+4. View Guests
+5. Exit
+Enter your choice: 4
+ID: 1, Name: Mokshada Sheth
+ID: 2, Name: Sanskruti
+Hotel Management System
+1. Add Guest
+2. Update Guest
+3. Delete Guest
+4. View Guests
+5. Exit
+Enter your choice: 3
+Enter guest ID to delete: 2
+Guest deleted successfully!
+Hotel Management System
+1. Add Guest
+2. Update Guest
+3. Delete Guest
+4. View Guests
+5. Exit
+Enter your choice: 4
+ID: 1, Name: Mokshada Sheth
+Hotel Management System
+1. Add Guest
+2. Update Guest
+3. Delete Guest
+4. View Guests
+5. Exit
+
+
+
+------------Mysql----------------
+SELECT * from guests;
++----------+----------------+-----------------+-------------+------------------+
+| guest_id | name           | email           | phone       | address          |
++----------+----------------+-----------------+-------------+------------------+
+|        1 | Mokshada Sheth | sheth@gmail.com | 89756599999 | Om Shri Arunoday |
++----------+----------------+-----------------+-------------+------------------+
+1 row in set (0.00 sec)
+

@@ -1,0 +1,94 @@
+db.orders.insertMany( [
+...    { _id: 1, cust_id: "abc1", ord_date: ISODate("2012-11-02T17:04:11.102Z"), status: "A", amount: 50 },
+...    { _id: 2, cust_id: "xyz1", ord_date: ISODate("2013-10-01T17:04:11.102Z"), status: "A", amount: 100 },
+...    { _id: 3, cust_id: "xyz1", ord_date: ISODate("2013-10-12T17:04:11.102Z"), status: "D", amount: 25 },
+...    { _id: 4, cust_id: "xyz1", ord_date: ISODate("2013-10-11T17:04:11.102Z"), status: "D", amount: 125 },
+...    { _id: 5, cust_id: "abc1", ord_date: ISODate("2013-11-12T17:04:11.102Z"), status: "A", amount: 25 }
+... ] )
+{ "acknowledged" : true, "insertedIds" : [ 1, 2, 3, 4, 5 ] }
+> db.orders.find().pretty();
+{
+	"_id" : ObjectId("68d4bedc0756fa56b1730b0b"),
+	"orderId" : 1,
+	"customerId" : "C001",
+	"amount" : 100,
+	"status" : "completed",
+	"orderDate" : ISODate("2024-01-15T00:00:00Z")
+}
+{
+	"_id" : ObjectId("68d4bedc0756fa56b1730b0c"),
+	"orderId" : 2,
+	"customerId" : "C002",
+	"amount" : 150,
+	"status" : "pending",
+	"orderDate" : ISODate("2024-02-20T00:00:00Z")
+}
+{
+	"_id" : ObjectId("68d4bedc0756fa56b1730b0d"),
+	"orderId" : 3,
+	"customerId" : "C001",
+	"amount" : 200,
+	"status" : "completed",
+	"orderDate" : ISODate("2024-03-05T00:00:00Z")
+}
+{
+	"_id" : ObjectId("68d4bedc0756fa56b1730b0e"),
+	"orderId" : 4,
+	"customerId" : "C003",
+	"amount" : 300,
+	"status" : "completed",
+	"orderDate" : ISODate("2023-12-25T00:00:00Z")
+}
+{
+	"_id" : ObjectId("68d4bedc0756fa56b1730b0f"),
+	"orderId" : 5,
+	"customerId" : "C002",
+	"amount" : 250,
+	"status" : "completed",
+	"orderDate" : ISODate("2024-04-15T00:00:00Z")
+}
+{
+	"_id" : 1,
+	"cust_id" : "abc1",
+	"ord_date" : ISODate("2012-11-02T17:04:11.102Z"),
+	"status" : "A",
+	"amount" : 50
+}
+{
+	"_id" : 2,
+	"cust_id" : "xyz1",
+	"ord_date" : ISODate("2013-10-01T17:04:11.102Z"),
+	"status" : "A",
+	"amount" : 100
+}
+{
+	"_id" : 3,
+	"cust_id" : "xyz1",
+	"ord_date" : ISODate("2013-10-12T17:04:11.102Z"),
+	"status" : "D",
+	"amount" : 25
+}
+{
+	"_id" : 4,
+	"cust_id" : "xyz1",
+	"ord_date" : ISODate("2013-10-11T17:04:11.102Z"),
+	"status" : "D",
+	"amount" : 125
+}
+{
+	"_id" : 5,
+	"cust_id" : "abc1",
+	"ord_date" : ISODate("2013-11-12T17:04:11.102Z"),
+	"status" : "A",
+	"amount" : 25
+}
+> db.orders.aggregate( [
+...    { $match: { status: "A" } },
+...    { $group: { _id: "$cust_id", total: { $sum: "$amount" } } },
+...    { $sort: { total: -1 } }
+... ] )
+{ "_id" : "xyz1", "total" : 100 }
+{ "_id" : "abc1", "total" : 75 }
+> 
+
+
